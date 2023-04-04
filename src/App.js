@@ -5,87 +5,117 @@ import { useState } from 'react';
 function App() {
 
   let [title, setTitle] = useState(["Men's Jacket Recommendation", "Gangnam Restaurant", "Python Self-Study"])
-  // let [like1, setLike1] = useState(0)
-  // let [like2, setLike2] = useState(0)
-  // let [like3, setLike3] = useState(0)
-  let [like, setLike] = useState([0, 0, 0])
+  let [like, setLike] = useState([43, 33, 2])
   let [modal, setModal] = useState(false);
-  let [selectedTitle, setSelectedTitle] = useState("");
+  let [selectedTitle, setSelectedTitle] = useState(0);
+  let [input, setInput] = useState('')
+  let [date, setDate] = useState(['03/12/2023', '03/30/2023', '03/31/2023'])
 
-  
+  const addPost = () => {
+    const currentDate = new Date().toLocaleDateString();
+    const newTitle = [...title, input]
+    const newLike = [...like, 0];
+    const newDate = [...date, currentDate]
+    setTitle(newTitle);
+    setLike(newLike);
+    setDate(newDate)
+  }
+
+  const deletePost = (index) => {
+    let copyTitle = [...title];
+    copyTitle.splice(index, 1);
+    let copyLike = [...like];
+    copyLike.splice(index, 1);
+    let copyDate = [...date];
+    copyDate.splice(index, 1)
+    setTitle(copyTitle)
+    setLike(copyLike);
+    setDate(copyDate);
+  }
+
+
+
 
   return (
     <div className="App">
       <div className="black-nav">
         <h4>Blog</h4>
-        <div className='sorting'><button onClick={()=>{
+        <div className='sorting'><button onClick={() => {
           let copy = [...title];
-          copy.sort();  
+          copy.sort();
           setTitle(copy);
         }}>Sorting Alphabetically</button></div>
       </div>
 
-      {/* <div className="list">
-        <h4>{ title[0] } <span onClick={()=>{ setLike(like + 1)}}>👍</span> {like} </h4>
-      <button onClick={()=>{
-        let copy = [...title];
-        copy[0] = "Women's Jacket Recomendation";
-        setTitle(copy);
-        }}>Change Title</button>
-        <p>03/28/2023</p>
-      </div>
-      <div className="list">
-        <h4>{ title[1] }</h4>
-        <p>03/28/2023</p>
-      </div> */}
-      {/* <div className="list">
-        <h4 onClick={()=>{ setModal(!modal)}}>{ title[2] }</h4>
-        <p>03/28/2023</p>
-      </div> */}
+      {title.map(function (a, i) {
+        return (
+          <div className="list" key={i}>
+            <h4 onClick={() => {
+              setSelectedTitle(i)
+              setModal(!modal)
+            }}>
+              {title[i]}
+              <span onClick={(e) => {
+                e.stopPropagation();
+                let copy = [...like];
+                copy[i] = copy[i] + 1;
+                setLike(copy)
+              }}>👍{like[i]}</span>
+            </h4>
+            <p>{date[i]}</p>
+            <button onClick={() => {
+              setSelectedTitle(i);
+              deletePost(i);
+            }}>Delete</button>
 
-        {
-          title.map(function(t, i) {
-            return (
-              <div className="list" key={i}>
-              <h4 onClick={()=>{
-                setSelectedTitle(t)
-                setModal(!modal)
-              }}>
-                {title[i]}
-                <span onClick={()=>{
-                  let copy = [...like];
-                  copy[i] = copy[i] + 1;
-                  setLike(copy)
-                }}>👍{like[i]}</span>
-              </h4>
-              <p>03/28/2023</p>
-            </div>
-            )
-          })
+          </div>
+        )
+      })
+      }
+
+      <input onChange={(e) => {
+        setInput(e.target.value);
+      }}></input>
+
+      <button onClick={() => {
+        if (input) {
+          addPost()
+          // setInput()
+          // let copy = [...title];
+          // copy.unshift(input)
+          // setTitle(copy)
         }
-        
-        
-        {
-          modal ? <Modal title={selectedTitle} setTitle={setTitle} /> : null
-        }
+      }}>Create</button>
+
+      {
+        modal ?
+          (<Modal
+            selectedTitle={selectedTitle}
+            setTitle={setTitle}
+            title={title}
+            like={like}
+            setLike={setLike}
+          />) : null
+      }
 
     </div>
   );
 }
 
-function Modal(props){
+function Modal(props) {
   return (
-    <div className='modal' style={{background : props.color}}>
-    <h4>{props.title}</h4>
-    <p>Date</p>
-    <p>Detail</p>
-    <button onClick={()=>{
+    <div className='modal' style={{ background: props.color }}>
+      <h4>{props.title[props.selectedTitle]}</h4>
+      <p>Date</p>
+      <p>Detail</p>
+
+      {/* <button onClick={()=>{
       // let copy = [...props.title];
       // copy[0] = "Women's Jacket Recomendation";
       // props.setTitle(copy);
-    }} >Change Title</button>
-  </div>
-  ) 
+    }} >Change Title</button> */}
+    </div>
+  )
 }
 
 
